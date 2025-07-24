@@ -9,6 +9,9 @@ import UIKit
 
 class ModalViewController: UIViewController {
     
+    let viewModel = ModalViewModel()
+    
+    
     // MARK: - UI Componants
     private let modalView: UIView = {
         let modalView = UIView()
@@ -45,16 +48,36 @@ class ModalViewController: UIViewController {
         return closeModalButton
     }()
     
+    private let containerView: UIView = {
+        let container = UIView()
+        return container
+    }()
+    
     private let stackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
-        stackView.distribution = .fill
+        //        stackView.distribution = .fill
         stackView.alignment = .leading
-        stackView.spacing = 1
+        stackView.spacing = 0
         
         return stackView
     }()
     
+    private let locationPinView: UIImageView = {
+        let pin = UIImageView()
+        pin.image = UIImage(systemName: "mappin.and.ellipse.circle.fill")
+        pin.contentMode = .scaleAspectFit
+        pin.tintColor = UIColor(white: 1.0, alpha: 0.8)
+        pin.clipsToBounds = true
+        
+        return pin
+    }()
+    
+    private lazy var locationName: UILabel = {
+        let label = viewModel.locationLabelViewModel(city: "Paris")
+        
+        return label
+    }()
     
     private let nameLabel: UILabel = {
         let nameLabel = UILabel()
@@ -95,12 +118,14 @@ class ModalViewController: UIViewController {
         UIImage(named: "logo-github") ?? UIImage(systemName: "person.crop.circle")!,
     ]
     
-    private let imageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(systemName: "person.circle.fill")
-        imageView.contentMode = .scaleAspectFit
-        
-        return imageView
+    private lazy var aboutLabel: UILabel = {
+        let label = viewModel.titleLabelViewModel(name: "ABOUT")
+        return label
+    }()
+    
+    private lazy var aboutDesc: UILabel = {
+        let label = viewModel.descLabelViewModel(text: "I have over 10 years of experience in marketing, influence, and events, primarily in the video game and new technology sectors.\n\nCurrently, I’m training as an iOS developer to expand my skill set and stay aligned with market trends—whether to lead a team or be the one building the project.\n\nI’m highly driven and give my absolute best once I set my mind to something. I love sharing my experience, which is why I see every new opportunity as an exchange rather than a one-way interaction.")
+        return label
     }()
     
     
@@ -132,9 +157,17 @@ class ModalViewController: UIViewController {
         modalView.addSubview(gradientView)
         modalView.addSubview(closeModalButton)
         modalView.addSubview(nameLabel)
-        modalView.addSubview(jobLabel)
+        modalView.addSubview(containerView)
+        containerView.addSubview(jobLabel)
+        containerView.addSubview(stackView)
+        stackView.addArrangedSubview(locationPinView)
+        stackView.addArrangedSubview(locationName)
         modalView.addSubview(collectionView)
         modalView.addSubview(skillLabel)
+        modalView.addSubview(aboutLabel)
+        modalView.addSubview(aboutDesc)
+        
+        
         
         self.view = view
         
@@ -145,13 +178,20 @@ class ModalViewController: UIViewController {
     // MARK: - Setup Constraints
     
     private func setupConstraints() {
-        gradientView.translatesAutoresizingMaskIntoConstraints = false
-        closeModalButton.translatesAutoresizingMaskIntoConstraints = false
-        modalView.translatesAutoresizingMaskIntoConstraints = false
-        nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        jobLabel.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        skillLabel.translatesAutoresizingMaskIntoConstraints = false
+        let views = [
+            gradientView,
+            closeModalButton,
+            modalView,
+            nameLabel,
+            containerView,
+            stackView,
+            locationName,
+            jobLabel,
+            collectionView,
+            skillLabel
+        ]
+        
+        views.forEach { $0.translatesAutoresizingMaskIntoConstraints = false }
         
         NSLayoutConstraint.activate([
             gradientView.topAnchor.constraint(equalTo: modalView.topAnchor),
@@ -174,18 +214,33 @@ class ModalViewController: UIViewController {
             nameLabel.leadingAnchor.constraint(equalTo: modalView.leadingAnchor, constant: 16),
             nameLabel.trailingAnchor.constraint(equalTo: modalView.trailingAnchor, constant: -16),
             
-            jobLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 10),
-            jobLabel.leadingAnchor.constraint(equalTo: modalView.leadingAnchor, constant: 16),
-            jobLabel.trailingAnchor.constraint(equalTo: modalView.trailingAnchor, constant: -16),
+            containerView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 10),
+            containerView.leadingAnchor.constraint(equalTo: modalView.leadingAnchor, constant: 16),
+            containerView.trailingAnchor.constraint(equalTo: modalView.trailingAnchor, constant: -16),
             
-            skillLabel.topAnchor.constraint(equalTo: jobLabel.bottomAnchor, constant: 20),
+            jobLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            jobLabel.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+            
+            stackView.leadingAnchor.constraint(equalTo: jobLabel.trailingAnchor, constant: 16),
+            stackView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+            stackView.trailingAnchor.constraint(lessThanOrEqualTo: containerView.trailingAnchor),
+            
+            skillLabel.topAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 20),
             skillLabel.leadingAnchor.constraint(equalTo: modalView.leadingAnchor, constant: 16),
             skillLabel.trailingAnchor.constraint(equalTo: modalView.trailingAnchor, constant: -16),
             
             collectionView.topAnchor.constraint(equalTo: skillLabel.bottomAnchor, constant: 10),
             collectionView.leadingAnchor.constraint(equalTo: modalView.leadingAnchor, constant: 16),
             collectionView.trailingAnchor.constraint(equalTo: modalView.trailingAnchor, constant: -16),
-            collectionView.heightAnchor.constraint(equalToConstant: 80)
+            collectionView.heightAnchor.constraint(equalToConstant: 80),
+            
+            aboutLabel.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 20),
+            aboutLabel.leadingAnchor.constraint(equalTo: modalView.leadingAnchor, constant: 16),
+            aboutLabel.trailingAnchor.constraint(equalTo: modalView.trailingAnchor, constant: -16),
+            
+            aboutDesc.topAnchor.constraint(equalTo: aboutLabel.bottomAnchor, constant: 10),
+            aboutDesc.leadingAnchor.constraint(equalTo: modalView.leadingAnchor, constant: 16),
+            aboutDesc.trailingAnchor.constraint(equalTo: modalView.trailingAnchor, constant: -16),
             
         ])
     }
