@@ -63,14 +63,14 @@ class ViewController: UIViewController {
         
         self.view = view
         
-        let stroke: [NSAttributedString.Key : Any] = [
-            .strokeColor : UIColor.white,
-            .foregroundColor : UIColor.black,
-            .strokeWidth : 2.0,
-        ]
-        
-        let attributedString = NSAttributedString(string: showModalButton.title(for: .normal) ?? "", attributes: stroke)
-        showModalButton.setAttributedTitle(attributedString, for: .normal)
+//        let stroke: [NSAttributedString.Key : Any] = [
+//            .strokeColor : UIColor.white,
+//            .foregroundColor : UIColor.black,
+//            .strokeWidth : 2.0,
+//        ]
+//        
+//        let attributedString = NSAttributedString(string: showModalButton.title(for: .normal) ?? "", attributes: stroke)
+//        showModalButton.setAttributedTitle(attributedString, for: .normal)
         
     }
     
