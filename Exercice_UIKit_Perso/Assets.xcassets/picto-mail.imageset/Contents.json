@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "picto-mail.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

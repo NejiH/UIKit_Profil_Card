@@ -6,8 +6,9 @@
 //
 
 import UIKit
+import MessageUI
 
-class ModalViewController: UIViewController {
+class ModalViewController: UIViewController, MFMailComposeViewControllerDelegate {
     
     let viewModel = ModalViewModel()
     
@@ -48,17 +49,13 @@ class ModalViewController: UIViewController {
         return closeModalButton
     }()
     
-    private let containerView: UIView = {
-        let container = UIView()
+    private lazy var containerTopView: UIView = {
+        let container = viewModel.containerViewModel()
         return container
     }()
     
-    private let stackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .horizontal
-        //        stackView.distribution = .fill
-        stackView.alignment = .leading
-        stackView.spacing = 0
+    private lazy var hStackTopView: UIStackView = {
+        let stackView = viewModel.HStackViewModel()
         
         return stackView
     }()
@@ -118,15 +115,72 @@ class ModalViewController: UIViewController {
         UIImage(named: "logo-github") ?? UIImage(systemName: "person.crop.circle")!,
     ]
     
+    private lazy var containerBottomView: UIView = {
+        let container = viewModel.containerViewModel()
+        return container
+    }()
+    
     private lazy var aboutLabel: UILabel = {
         let label = viewModel.titleLabelViewModel(name: "ABOUT")
         return label
     }()
     
     private lazy var aboutDesc: UILabel = {
-        let label = viewModel.descLabelViewModel(text: "I have over 10 years of experience in marketing, influence, and events, primarily in the video game and new technology sectors.\n\nCurrently, I’m training as an iOS developer to expand my skill set and stay aligned with market trends—whether to lead a team or be the one building the project.\n\nI’m highly driven and give my absolute best once I set my mind to something. I love sharing my experience, which is why I see every new opportunity as an exchange rather than a one-way interaction.")
+        let label = viewModel.descLabelViewModel(text: "I have over 10 years of experience in marketing, influence, and events in the video games and hightech.\n\nI’m now training as an iOS developer. I love sharing my experience, which is why I see every new opportunity as an exchange rather than a one-way interaction.")
         return label
     }()
+    
+    private lazy var projectLabel: UILabel = {
+        let label = viewModel.titleLabelViewModel(name: "PROJECT")
+        return label
+    }()
+    
+    private lazy var projectDesc: UILabel = {
+        let label = viewModel.descLabelViewModel(text: "My next project is a narrative game in wich players will explore dreams to collect artefacts that will unveil their true identity.")
+        return label
+    }()
+    
+    private lazy var contactLabel: UILabel = {
+        let label = viewModel.titleLabelViewModel(name: "CONTACT")
+        return label
+    }()
+    
+    private lazy var hStackBottomView: UIStackView = {
+        let stackView = viewModel.HStackViewModel()
+        
+        return stackView
+    }()
+    
+    private var buttonMail: UIButton = {
+        let button = UIButton(type: .system)
+        if let image = UIImage(named: "picto-mail") {
+            button.setImage(image, for: .normal)
+        } else {
+            print("L'image n'a pas pu être chargée.")
+        }
+        button.tintColor = .white
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.imageView?.contentMode = .scaleAspectFit
+        
+        return button
+    }()
+    
+    private var buttonLinkedIn: UIButton = {
+        let button = UIButton(type: .system)
+        if let image = UIImage(named: "picto-linkedin") {
+            button.setImage(image, for: .normal)
+        } else {
+            print("L'image n'a pas pu être chargée.")
+        }
+        button.tintColor = .white
+        button.imageView?.contentMode = .scaleAspectFit
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        return button
+      
+        
+    }()
+    
     
     
     // MARK: - loadView
@@ -154,19 +208,26 @@ class ModalViewController: UIViewController {
     private func setupUI() {
         let view = UIView()
         view.addSubview(modalView)
+        
         modalView.addSubview(gradientView)
         modalView.addSubview(closeModalButton)
         modalView.addSubview(nameLabel)
-        modalView.addSubview(containerView)
-        containerView.addSubview(jobLabel)
-        containerView.addSubview(stackView)
-        stackView.addArrangedSubview(locationPinView)
-        stackView.addArrangedSubview(locationName)
+        modalView.addSubview(containerTopView)
+        containerTopView.addSubview(jobLabel)
+        containerTopView.addSubview(hStackTopView)
+        hStackTopView.addArrangedSubview(locationPinView)
+        hStackTopView.addArrangedSubview(locationName)
         modalView.addSubview(collectionView)
         modalView.addSubview(skillLabel)
-        modalView.addSubview(aboutLabel)
-        modalView.addSubview(aboutDesc)
-        
+        modalView.addSubview(containerBottomView)
+        containerBottomView.addSubview(aboutLabel)
+        containerBottomView.addSubview(aboutDesc)
+        containerBottomView.addSubview(projectLabel)
+        containerBottomView.addSubview(projectDesc)
+        modalView.addSubview(hStackBottomView)
+        hStackBottomView.addSubview(buttonMail)
+        hStackBottomView.addSubview(buttonLinkedIn)
+
         
         
         self.view = view
@@ -176,105 +237,182 @@ class ModalViewController: UIViewController {
     }
     
     // MARK: - Setup Constraints
-    
     private func setupConstraints() {
         let views = [
             gradientView,
             closeModalButton,
             modalView,
             nameLabel,
-            containerView,
-            stackView,
             locationName,
             jobLabel,
             collectionView,
             skillLabel
         ]
-        
+
         views.forEach { $0.translatesAutoresizingMaskIntoConstraints = false }
-        
+
+        setupGradientViewConstraints()
+        setupCloseModalButtonConstraints()
+        setupModalViewConstraints()
+        setupNameLabelConstraints()
+        setupContainerTopViewConstraints()
+        setupSkillLabelConstraints()
+        setupCollectionViewConstraints()
+        setupContainerBottomViewConstraints()
+        setupHStackBottomViewConstraints()
+    }
+    
+    private func setupGradientViewConstraints() {
+        gradientView.pinToEdges(of: modalView)
+
+    }
+    
+    private func setupModalViewConstraints() {
+        modalView.pinToEdges(of: view, padding: 10)
+    }
+
+    private func setupCloseModalButtonConstraints() {
         NSLayoutConstraint.activate([
-            gradientView.topAnchor.constraint(equalTo: modalView.topAnchor),
-            gradientView.leadingAnchor.constraint(equalTo: modalView.leadingAnchor),
-            gradientView.trailingAnchor.constraint(equalTo: modalView.trailingAnchor),
-            gradientView.bottomAnchor.constraint(equalTo: modalView.bottomAnchor),
-            
             closeModalButton.topAnchor.constraint(equalTo: modalView.topAnchor, constant: 8),
             closeModalButton.trailingAnchor.constraint(equalTo: modalView.trailingAnchor, constant: -8),
             closeModalButton.widthAnchor.constraint(equalToConstant: 30),
-            closeModalButton.heightAnchor.constraint(equalToConstant: 30),
-            
-            modalView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            modalView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            modalView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
-            modalView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
-            modalView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
+            closeModalButton.heightAnchor.constraint(equalToConstant: 30)
+        ])
+    }
+    
+
+
+    private func setupNameLabelConstraints() {
+        NSLayoutConstraint.activate([
             nameLabel.topAnchor.constraint(equalTo: closeModalButton.topAnchor, constant: 20),
             nameLabel.leadingAnchor.constraint(equalTo: modalView.leadingAnchor, constant: 16),
-            nameLabel.trailingAnchor.constraint(equalTo: modalView.trailingAnchor, constant: -16),
-            
-            containerView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 10),
-            containerView.leadingAnchor.constraint(equalTo: modalView.leadingAnchor, constant: 16),
-            containerView.trailingAnchor.constraint(equalTo: modalView.trailingAnchor, constant: -16),
-            
-            jobLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-            jobLabel.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-            
-            stackView.leadingAnchor.constraint(equalTo: jobLabel.trailingAnchor, constant: 16),
-            stackView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-            stackView.trailingAnchor.constraint(lessThanOrEqualTo: containerView.trailingAnchor),
-            
-            skillLabel.topAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 20),
+            nameLabel.trailingAnchor.constraint(equalTo: modalView.trailingAnchor, constant: -16)
+        ])
+    }
+
+    private func setupContainerTopViewConstraints() {
+        NSLayoutConstraint.activate([
+            containerTopView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 10),
+            containerTopView.leadingAnchor.constraint(equalTo: modalView.leadingAnchor, constant: 16),
+            containerTopView.trailingAnchor.constraint(equalTo: modalView.trailingAnchor, constant: -16),
+            jobLabel.leadingAnchor.constraint(equalTo: containerTopView.leadingAnchor),
+            jobLabel.centerYAnchor.constraint(equalTo: containerTopView.centerYAnchor),
+            hStackTopView.leadingAnchor.constraint(equalTo: jobLabel.trailingAnchor, constant: 16),
+            hStackTopView.centerYAnchor.constraint(equalTo: containerTopView.centerYAnchor),
+            hStackTopView.trailingAnchor.constraint(lessThanOrEqualTo: containerTopView.trailingAnchor)
+        ])
+    }
+
+    private func setupSkillLabelConstraints() {
+        NSLayoutConstraint.activate([
+            skillLabel.topAnchor.constraint(equalTo: containerTopView.bottomAnchor, constant: 20),
             skillLabel.leadingAnchor.constraint(equalTo: modalView.leadingAnchor, constant: 16),
-            skillLabel.trailingAnchor.constraint(equalTo: modalView.trailingAnchor, constant: -16),
-            
+            skillLabel.trailingAnchor.constraint(equalTo: modalView.trailingAnchor, constant: -16)
+        ])
+    }
+
+    private func setupCollectionViewConstraints() {
+        NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: skillLabel.bottomAnchor, constant: 10),
             collectionView.leadingAnchor.constraint(equalTo: modalView.leadingAnchor, constant: 16),
             collectionView.trailingAnchor.constraint(equalTo: modalView.trailingAnchor, constant: -16),
-            collectionView.heightAnchor.constraint(equalToConstant: 80),
-            
-            aboutLabel.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 20),
-            aboutLabel.leadingAnchor.constraint(equalTo: modalView.leadingAnchor, constant: 16),
-            aboutLabel.trailingAnchor.constraint(equalTo: modalView.trailingAnchor, constant: -16),
-            
-            aboutDesc.topAnchor.constraint(equalTo: aboutLabel.bottomAnchor, constant: 10),
-            aboutDesc.leadingAnchor.constraint(equalTo: modalView.leadingAnchor, constant: 16),
-            aboutDesc.trailingAnchor.constraint(equalTo: modalView.trailingAnchor, constant: -16),
-            
+            collectionView.heightAnchor.constraint(equalToConstant: 80)
         ])
     }
+
+    private func setupContainerBottomViewConstraints() {
+        NSLayoutConstraint.activate([
+            containerBottomView.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 20),
+            containerBottomView.leadingAnchor.constraint(equalTo: modalView.leadingAnchor, constant: 16),
+            containerBottomView.trailingAnchor.constraint(equalTo: modalView.trailingAnchor, constant: -16),
+            aboutLabel.leadingAnchor.constraint(equalTo: containerBottomView.leadingAnchor),
+            aboutLabel.trailingAnchor.constraint(equalTo: containerBottomView.trailingAnchor),
+            aboutDesc.topAnchor.constraint(equalTo: aboutLabel.bottomAnchor, constant: 10),
+            aboutDesc.leadingAnchor.constraint(equalTo: containerBottomView.leadingAnchor),
+            aboutDesc.trailingAnchor.constraint(equalTo: containerBottomView.trailingAnchor),
+            projectLabel.topAnchor.constraint(equalTo: aboutDesc.bottomAnchor, constant: 15),
+            projectLabel.leadingAnchor.constraint(equalTo: containerBottomView.leadingAnchor),
+            projectLabel.trailingAnchor.constraint(equalTo: containerBottomView.trailingAnchor),
+            projectDesc.topAnchor.constraint(equalTo: projectLabel.bottomAnchor, constant: 10),
+            projectDesc.leadingAnchor.constraint(equalTo: containerBottomView.leadingAnchor),
+            projectDesc.trailingAnchor.constraint(equalTo: containerBottomView.trailingAnchor)
+        ])
+    }
+
+    private func setupHStackBottomViewConstraints() {
+        NSLayoutConstraint.activate([
+            hStackBottomView.topAnchor.constraint(equalTo: projectDesc.bottomAnchor, constant: 50),
+            hStackBottomView.leadingAnchor.constraint(equalTo: modalView.leadingAnchor, constant: 16),
+            hStackBottomView.trailingAnchor.constraint(equalTo: modalView.trailingAnchor, constant: -16),
+            hStackBottomView.heightAnchor.constraint(equalToConstant: 60),
+            buttonMail.leadingAnchor.constraint(equalTo: hStackBottomView.leadingAnchor, constant: 60)
+        ])
+        buttonLinkedIn.widtHeightAnchor(padding: 48)
+        buttonMail.widtHeightAnchor(padding: 48)
+    }
+
     
     //MARK: - Setup Gradient
     
     private func setupGradient() {
-        // Supprimer les anciens gradients (évite les doublons lors des rotations)
         gradientView.layer.sublayers?.removeAll(where: { $0 is CAGradientLayer })
         
         let gradientLayer = CAGradientLayer()
         gradientLayer.frame = gradientView.bounds
         
-        // Gradient bleu vers violet
         gradientLayer.colors = [
             UIColor.systemRed.cgColor,
             UIColor.systemBrown.cgColor
         ]
         
-        // Direction du gradient (vertical par défaut)
         gradientLayer.startPoint = CGPoint(x: 0.5, y: 0.0)
         gradientLayer.endPoint = CGPoint(x: 0.5, y: 1.0)
         
         gradientView.layer.insertSublayer(gradientLayer, at: 0)
     }
     
+    
+    
     //MARK: - Actions
     private func setupAction (){
         closeModalButton.addTarget(self, action: #selector(dismissModal), for: .touchUpInside)
+        
+        buttonMail.addTarget(self, action: #selector(sendEmail), for: .touchUpInside)
+        
+        buttonLinkedIn.addTarget(self, action: #selector(openURL), for: .touchUpInside)
+        
     }
     
     @objc func dismissModal() {
         self.dismiss(animated: true)
     }
+    
+    @objc func openURL() {
+        if let url = URL(string: "https://www.linkedin.com/in/arnaudhayon/") {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        }
+    }
+    
+    @objc func sendEmail() {
+            if MFMailComposeViewController.canSendMail() {
+                let mail = MFMailComposeViewController()
+                mail.mailComposeDelegate = self
+                mail.setToRecipients(["contact@arnaudhayon.com"])
+                mail.setSubject("Sujet de l'email")
+                mail.setMessageBody("<p>Corps de l'email</p>", isHTML: true)
+
+                present(mail, animated: true)
+            } else {
+                // Montrez une alerte si l'envoi d'email n'est pas possible
+                let alert = UIAlertController(title: "Erreur", message: "Impossible d'envoyer l'email", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true)
+            }
+        }
+    
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+           controller.dismiss(animated: true)
+       }
     
 }
 

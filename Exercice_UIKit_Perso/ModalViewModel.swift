@@ -27,7 +27,7 @@ class ModalViewModel {
         label.textAlignment = .left
         label.numberOfLines = 0
         label.sizeToFit()
-        label.font = .systemFont(ofSize: 20, weight: .medium)
+        label.font = .systemFont(ofSize: 16, weight: .medium)
         label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
 
@@ -38,13 +38,30 @@ class ModalViewModel {
         let label = UILabel()
         label.text = city
         label.textAlignment = .left
-        label.font = .systemFont(ofSize: 20, weight: .bold)
+        label.font = .systemFont(ofSize: 18, weight: .bold)
         label.textColor = UIColor(white: 1.0, alpha: 0.8)
         label.translatesAutoresizingMaskIntoConstraints = false
         
         return label
     }
     
+    func containerViewModel() -> UIView {
+        let container = UIView()
+        
+        container.translatesAutoresizingMaskIntoConstraints = false
+        return container
+    }
+    
+    func HStackViewModel() -> UIStackView {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.distribution = .fill
+        stackView.spacing = 16
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        return stackView
+    }
 }
 
 
