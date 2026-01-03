@@ -81,7 +81,11 @@ class ModalViewController: UIViewController, MFMailComposeViewControllerDelegate
         nameLabel.text = "Arnaud HAYON"
         nameLabel.textAlignment = .left
         nameLabel.textColor = .white
-        nameLabel.font = .systemFont(ofSize: 36, weight: .bold)
+//        nameLabel.font = .systemFont(ofSize: 36, weight: .bold)
+        let fontMetrics = UIFontMetrics(forTextStyle: .largeTitle)
+        let font = UIFont.systemFont(ofSize: 36, weight: .bold)
+        nameLabel.font = fontMetrics.scaledFont(for: font)
+        nameLabel.adjustsFontForContentSizeCategory = true
         
         return nameLabel
     }()
@@ -207,6 +211,7 @@ class ModalViewController: UIViewController, MFMailComposeViewControllerDelegate
     // MARK: - Setup UI
     private func setupUI() {
         let view = UIView()
+        view.backgroundColor = .clear
         view.addSubview(modalView)
         
         modalView.addSubview(gradientView)
@@ -268,7 +273,14 @@ class ModalViewController: UIViewController, MFMailComposeViewControllerDelegate
     }
     
     private func setupModalViewConstraints() {
-        modalView.pinToEdges(of: view, padding: 10)
+        modalView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+                modalView.topAnchor.constraint(equalTo: view.topAnchor),
+                modalView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                modalView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                modalView.bottomAnchor.constraint(equalTo: view.bottomAnchor) // Ignore la safe area en bas de page
+            ])
+        modalView.pinToEdges(of: view, padding: 0)
     }
 
     private func setupCloseModalButtonConstraints() {
