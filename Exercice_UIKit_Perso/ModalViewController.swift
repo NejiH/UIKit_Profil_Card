@@ -130,7 +130,7 @@ class ModalViewController: UIViewController, MFMailComposeViewControllerDelegate
     }()
     
     private lazy var aboutDesc: UILabel = {
-        let label = viewModel.descLabelViewModel(text: "I have over 10 years of experience in marketing, influence, and events in the video games and hightech.\n\nI’m now training as an iOS developer. I love sharing my experience, which is why I see every new opportunity as an exchange rather than a one-way interaction.")
+        let label = viewModel.descLabelViewModel(text: "I have over 10 years of experience in marketing, influence, and events in the video games and hightech industries.\n\nI’m now training as an iOS developer. I love sharing my experience, which is why I see every new opportunity as an exchange rather than a one-way interaction.")
         return label
     }()
     
@@ -415,7 +415,7 @@ class ModalViewController: UIViewController, MFMailComposeViewControllerDelegate
 
                 present(mail, animated: true)
             } else {
-                // Montrez une alerte si l'envoi d'email n'est pas possible
+                // Montre une alerte si l'envoi d'email n'est pas possible
                 let alert = UIAlertController(title: "Erreur", message: "Impossible d'envoyer l'email", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 present(alert, animated: true)

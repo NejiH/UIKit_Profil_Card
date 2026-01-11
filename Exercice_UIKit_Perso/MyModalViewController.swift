@@ -2,8 +2,6 @@
 //  MyModalViewController.swift
 //  Exercice_UIKit_Perso
 //
-//  Created by Arnaud Hayon on 07/08/2025.
-//
 
 import UIKit
 
@@ -11,6 +9,7 @@ class MyModalViewController: UIViewController {
     
     let viewModel = ModalViewModel()
     
+    //MARK: - Déclarations
     let gradientView = UIView()
     let closeModalButton = UIButton()
     let modalView = UIView()
@@ -31,7 +30,7 @@ class MyModalViewController: UIViewController {
     let buttonMail = UIButton()
     
     lazy var mainStackView: UIStackView = {
-           // Mettez ici toutes les vues qui s'empilent verticalement
+           // vues qui s'empilent verticalement
            let stack = UIStackView(arrangedSubviews: [
                nameLabel,
                containerTopView,
@@ -41,7 +40,7 @@ class MyModalViewController: UIViewController {
                hStackBottomView
            ])
            stack.axis = .vertical
-           stack.spacing = 16 // Un espacement par défaut, vous pouvez le personnaliser
+           stack.spacing = 16
            stack.alignment = .fill
            return stack
        }()
@@ -49,7 +48,6 @@ class MyModalViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Do any additional setup after loading the view.
     }
     
 }
